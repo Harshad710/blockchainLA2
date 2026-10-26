@@ -1,0 +1,50 @@
+{
+  "name": "tablepulse",
+  "version": "1.0.0",
+  "description": "Understand your data before it reaches production — a developer-first tabular data profiling API with x402 micropayments",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/src/server.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "audit": "tsx scripts/audit.ts",
+    "buyer:single": "tsx buyer/profile.ts",
+    "buyer:batch": "tsx buyer/profile-batch.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "csv-parse": "^5.6.0",
+    "zod": "^3.24.2",
+    "viem": "^2.39.3",
+    "dotenv": "^16.4.7",
+    "uuid": "^11.1.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "cors": "^2.8.5",
+    "@x402/core": "~2.14.0",
+    "@x402/evm": "~2.14.0",
+    "@x402/express": "~2.14.0",
+    "@x402/fetch": "~2.14.0",
+    "@x402/extensions": "~2.14.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "tsx": "^4.21.0",
+    "@types/node": "^22.13.4",
+    "@types/express": "^5.0.1",
+    "@types/cors": "^2.8.17",
+    "@types/uuid": "^10.0.0",
+    "vitest": "^3.0.5",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.2"
+  },
+  "license": "MIT"
+}

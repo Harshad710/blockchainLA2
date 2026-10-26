@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TablePulse — Developer Tabular Data Profiling & x402 Micropayments</title>
+  <meta name="description" content="Understand your data before it reaches production — Developer-first tabular data profiling API with x402 micropayments on Base Sepolia.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="/" class="brand">
+        <div class="brand-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">TablePulse</span>
+          <span class="brand-badge">v1.0.0</span>
+        </div>
+      </a>
+
+      <div class="nav-badges">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span id="nav-server-status">API Online</span>
+        </div>
+        <div class="badge badge-cyan">
+          <span>⚡ Base Sepolia</span>
+        </div>
+        <div class="badge badge-purple" id="nav-payment-badge">
+          <span>💰 $0.001 / profile</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <!-- Hero Header -->
+    <section class="hero">
+      <h1>Developer Data Profiling Console</h1>
+      <p>Inspect, validate, and debug messy tabular datasets with instant type inference, descriptive statistics, Tukey outlier detection, and x402 micropayments.</p>
+    </section>
+
+    <!-- 1-Click Sample Dataset Bar -->
+    <section class="sample-bar glass">
+      <div class="sample-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span>Instant Sample Datasets:</span>
+      </div>
+      <div class="sample-chips" id="sample-chips-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Data Input Workbench -->
+    <section class="workbench">
+      <div class="input-panel glass">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <span>Dataset Editor</span>
+          </div>
+          <div class="input-meta">
+            <span id="char-count">0 chars</span>
+            <span>•</span>
+            <span id="byte-count">0 B</span>
+            <span>•</span>
+            <span id="line-count">0 lines</span>
+          </div>
+        </div>
+
+        <div class="editor-wrapper">
+          <textarea id="data-input" class="data-editor" spellcheck="false" placeholder="Paste CSV or JSON tabular data here, or choose a sample above..."></textarea>
+        </div>
+
+        <div class="editor-actions">
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <div class="format-group">
+              <label for="dataset-name-input">Name:</label>
+              <input type="text" id="dataset-name-input" class="text-input" value="ecommerce_orders.csv" style="width: 190px;">
+            </div>
+            <div class="format-group">
+              <label for="format-select">Format:</label>
+              <select id="format-select" class="select-input">
+                <option value="auto">Auto Detect</option>
+                <option value="csv">CSV / TSV</option>
+                <option value="json">JSON (Array/Object)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button id="btn-preflight" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>⚡ Preflight Check (Free)</span>
+            </button>
+            <button id="btn-profile" class="btn btn-pulse">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span id="profile-btn-text">🚀 Run Full Profile ($0.001)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preflight Check Banner -->
+        <div id="preflight-banner" class="preflight-banner">
+          <div class="preflight-header">
+            <div class="preflight-title" id="preflight-status-title">
+              <!-- status icon & text -->
+            </div>
+            <div class="preflight-stats" id="preflight-stats">
+              <!-- stats -->
+            </div>
+          </div>
+          <div id="preflight-details" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profiling Results Workspace -->
+    <section id="results-workspace" class="results-workspace">
+      <!-- Score & Summary Deck -->
+      <div class="score-deck">
+        <div class="grade-card glass">
+          <div class="grade-circle" id="grade-circle">
+            <div class="grade-letter" id="grade-letter">-</div>
+            <div class="grade-score" id="grade-score">Score: -/100</div>
+          </div>
+          <div class="grade-label" id="grade-label">Quality Health</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-tile glass">
+            <span class="stat-label">Total Rows</span>
+            <span class="stat-val" id="stat-rows">0</span>
+            <span class="stat-sub" id="stat-empty-rows">0 empty rows</span>
+          </div>
+          <div class="stat-tile glass">
+            <span class="stat-label">Total Columns</span>
+            <span class="stat-val" id="stat-cols">0</span>
+            <span class="stat-sub" id="stat-col-types">0 types</span>
+          </div>
+          <div class="stat-tile glass">
+            <span class="stat-label">Duplicate Rows</span>
+            <span class="stat-val" id="stat-duplicates">0</span>
+            <span class="stat-sub" id="stat-duplicate-pct">0.0%</span>
+          </div>
+          <div class="stat-tile glass">
+            <span class="stat-label">Memory Size</span>
+            <span class="stat-val" id="stat-memory">0 KB</span>
+            <span class="stat-sub" id="stat-format">CSV</span>
+          </div>
+          <div class="stat-tile glass">
+            <span class="stat-label">Execution Time</span>
+            <span class="stat-val" id="stat-duration" style="color: var(--cyan-accent);">0 ms</span>
+            <span class="stat-sub">High throughput</span>
+          </div>
+          <div class="stat-tile glass">
+            <span class="stat-label">Quality Alerts</span>
+            <span class="stat-val" id="stat-alerts-count" style="color: var(--amber-warning);">0</span>
+            <span class="stat-sub" id="stat-alerts-breakdown">0 crit, 0 warn</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Navigation Tabs -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-columns">
+          <span>Column Inspector</span>
+          <span class="tab-badge" id="badge-columns-count">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-alerts">
+          <span>Quality Alerts & Fixes</span>
+          <span class="tab-badge" id="badge-alerts-count" style="background: rgba(245, 158, 11, 0.2); color: #fde68a;">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-json">
+          <span>Raw JSON Report</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-protocol">
+          <span>x402 Micropayments & Code</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Column Inspector -->
+      <div id="tab-columns" class="tab-pane active">
+        <div class="column-grid" id="column-grid-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Quality Alerts & Remediations -->
+      <div id="tab-alerts" class="tab-pane">
+        <div class="alerts-list" id="alerts-list-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Tab 3: Raw JSON Report -->
+      <div id="tab-json" class="tab-pane">
+        <div class="json-viewer-card glass">
+          <div class="json-toolbar">
+            <button id="btn-copy-json" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">
+              <span>📋 Copy JSON</span>
+            </button>
+            <button id="btn-download-json" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">
+              <span>💾 Download report.json</span>
+            </button>
+          </div>
+          <pre class="code-view" id="json-code-view" style="max-height: 520px; overflow-y: auto; background: #06090e; padding: 18px; border-radius: var(--radius-md);"></pre>
+        </div>
+      </div>
+
+      <!-- Tab 4: x402 Protocol & Code -->
+      <div id="tab-protocol" class="tab-pane">
+        <div class="protocol-card glass">
+          <div class="protocol-hero">
+            <div class="protocol-icon">402</div>
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 4px;">x402 HTTP Payment Protocol</h2>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">
+                TablePulse native machine-to-machine micropayments powered by the x402 standard on Base Sepolia.
+              </p>
+            </div>
+          </div>
+
+          <div class="handshake-steps">
+            <div class="step-box">
+              <div class="step-num">STEP 01</div>
+              <div class="step-heading">Client Request</div>
+              <div class="step-desc">Client makes standard HTTP POST to <code>/api/v1/profile</code> without payment.</div>
+            </div>
+            <div class="step-box">
+              <div class="step-num">STEP 02</div>
+              <div class="step-heading">402 Challenge</div>
+              <div class="step-desc">Server returns HTTP 402 with price ($0.001), network (Base Sepolia), and payee address.</div>
+            </div>
+            <div class="step-box">
+              <div class="step-num">STEP 03</div>
+              <div class="step-heading">Sign & Settle</div>
+              <div class="step-desc">Client SDK signs EIP-712 payment payload and resubmits. TablePulse profiles and returns report.</div>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.1rem; margin-bottom: 12px;">Programmatic Integration Snippets</h3>
+
+          <div class="remediation-block" style="margin-bottom: 16px;">
+            <div class="code-title">
+              <span>TypeScript / Node.js with @x402/fetch</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('snippet-node').innerText)">Copy</button>
+            </div>
+            <pre class="code-view" id="snippet-node">import { x402Client } from '@x402/core/client';
+import { registerExactEvmScheme } from '@x402/evm/exact/client';
+import { wrapFetchWithPayment } from '@x402/fetch';
+import { privateKeyToAccount } from 'viem/accounts';
+
+const account = privateKeyToAccount(process.env.BUYER_PRIVATE_KEY);
+const client = new x402Client();
+registerExactEvmScheme(client, { signer: account });
+
+const paidFetch = wrapFetchWithPayment(globalThis.fetch, client);
+
+const res = await paidFetch('http://localhost:3000/api/v1/profile', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    datasetName: 'orders.csv',
+    content: 'order_id,amount\n101,45.50\n102,12.00',
+  }),
+});
+
+const report = await res.json();
+console.log('Quality Grade:', report.summary.qualityGrade, 'Score:', report.summary.qualityScore);</pre>
+          </div>
+
+          <div class="remediation-block">
+            <div class="code-title">
+              <span>cURL Preflight Check (Free)</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('snippet-curl').innerText)">Copy</button>
+            </div>
+            <pre class="code-view" id="snippet-curl">curl -X POST http://localhost:3000/api/v1/preflight \
+  -H "Content-Type: application/json" \
+  -d '{"content": "order_id,amount\n101,45.50"}'</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
