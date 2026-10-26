@@ -114,19 +114,27 @@ export function computeNumericStats(rawNumbers: number[]): NumericStats | null {
     }
   }
 
+  const roundStat = (val: number): number => {
+    if (val === 0 || !Number.isFinite(val)) return val;
+    if (Math.abs(val) < 0.001) {
+      return parseFloat(val.toPrecision(6));
+    }
+    return Math.round(val * 10000) / 10000;
+  };
+
   return {
-    min: Math.round(min * 10000) / 10000,
-    max: Math.round(max * 10000) / 10000,
-    mean: Math.round(mean * 10000) / 10000,
-    sum: Math.round(sum * 10000) / 10000,
-    variance: Math.round(variance * 10000) / 10000,
-    stdDev: Math.round(stdDev * 10000) / 10000,
-    median: Math.round(median * 10000) / 10000,
-    q25: Math.round(q25 * 10000) / 10000,
-    q75: Math.round(q75 * 10000) / 10000,
-    iqr: Math.round(iqr * 10000) / 10000,
-    skewness: skewness !== null ? Math.round(skewness * 10000) / 10000 : null,
-    kurtosis: kurtosis !== null ? Math.round(kurtosis * 10000) / 10000 : null,
+    min: roundStat(min),
+    max: roundStat(max),
+    mean: roundStat(mean),
+    sum: roundStat(sum),
+    variance: roundStat(variance),
+    stdDev: roundStat(stdDev),
+    median: roundStat(median),
+    q25: roundStat(q25),
+    q75: roundStat(q75),
+    iqr: roundStat(iqr),
+    skewness: skewness !== null ? roundStat(skewness) : null,
+    kurtosis: kurtosis !== null ? roundStat(kurtosis) : null,
     zerosCount,
     zerosPercentage: Math.round((zerosCount / n) * 10000) / 100,
     negativesCount,

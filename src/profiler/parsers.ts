@@ -55,11 +55,13 @@ export function parseCSV(content: string, maxBytes = LIMITS.MAX_DATASET_CONTENT_
     throw new ValidationError('CSV content is empty');
   }
 
-  const delimiter = detectDelimiter(trimmed.slice(0, 2048));
+  // Normalize mixed line endings (\r\n and \r to \n)
+  const normalized = trimmed.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const delimiter = detectDelimiter(normalized.slice(0, 2048));
 
   let rawRecords: string[][];
   try {
-    rawRecords = parseCsvSync(trimmed, {
+    rawRecords = parseCsvSync(normalized, {
       delimiter,
       skip_empty_lines: true,
       relax_column_count: true,
